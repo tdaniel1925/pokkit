@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --divine-glow: rgba(139, 92, 246, 0.3);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Divine glow effect */
+.divine-glow {
+  box-shadow: 0 0 20px var(--divine-glow);
+}
+
+/* Feed item animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feed-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Status indicators */
+.status-thriving {
+  color: #22c55e;
+}
+.status-stable {
+  color: #3b82f6;
+}
+.status-struggling {
+  color: #f59e0b;
+}
+.status-crisis {
+  color: #ef4444;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}

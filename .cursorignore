@@ -1,0 +1,47 @@
+# CodeBakers - Files to ignore in Cursor context
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+.nuxt/
+out/
+
+# Cache
+.cache/
+.turbo/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Environment files (don't leak secrets)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Package locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.min.js
+*.min.css
+*.map

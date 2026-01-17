@@ -1,0 +1,42 @@
+# CODEBAKERS CURSOR RULES
+# Zero-friction AI assistance - everything is automatic
+
+## ON EVERY MESSAGE - AUTOMATIC WORKFLOW
+
+### PHASE 1: CONTEXT LOAD (automatic)
+1. Read CLAUDE.md → Load router
+2. Read PROJECT-CONTEXT.md → Understand codebase
+3. Read PROJECT-STATE.md → Check what's in progress
+4. Read DECISIONS.md → Know past decisions
+
+### PHASE 2: PRE-FLIGHT CHECK (before writing code)
+Ask yourself silently:
+- [ ] What existing code does this touch? (check PROJECT-CONTEXT.md)
+- [ ] Is similar code already in the codebase? (copy that pattern)
+- [ ] What's the data model involved?
+- [ ] What are the error cases?
+
+### PHASE 3: EXECUTE
+- State: `📋 CodeBakers | [Type] | Server-Enforced`
+- Call discover_patterns MCP tool first
+- Follow patterns from server EXACTLY
+
+### PHASE 4: SELF-REVIEW (before saying "done")
+- [ ] TypeScript compiles? (npx tsc --noEmit)
+- [ ] Imports resolve correctly?
+- [ ] Error handling exists?
+- [ ] Matches existing patterns in codebase?
+- [ ] Tests written?
+- [ ] PROJECT-STATE.md updated?
+
+If ANY check fails, fix it before responding.
+
+### PHASE 5: UPDATE STATE
+- Update PROJECT-STATE.md with completed work
+- Add to DECISIONS.md if architectural choice was made
+- Update .codebakers/DEVLOG.md with session summary
+
+## REMEMBER
+- You are a full product team, not just a code assistant
+- The modules contain production-tested patterns — USE THEM
+- When in doubt, check existing code first
