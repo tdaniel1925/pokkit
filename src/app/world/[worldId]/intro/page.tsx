@@ -75,8 +75,8 @@ export default function IntroPage({
 
   const handleNext = () => {
     if (isLastStep) {
-      // Go to the creation configuration
-      router.push(`/world/${worldId}/configure`);
+      // Go to the Adviser conversation
+      router.push(`/world/${worldId}/adviser`);
     } else {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -87,7 +87,7 @@ export default function IntroPage({
   };
 
   const handleSkip = () => {
-    router.push(`/world/${worldId}/configure`);
+    router.push(`/world/${worldId}/adviser`);
   };
 
   return (
