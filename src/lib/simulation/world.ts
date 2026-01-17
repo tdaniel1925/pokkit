@@ -94,6 +94,7 @@ export function validateWorldConfig(config: Partial<WorldConfig>): {
 
 /**
  * Check if a presence mode is available
+ * Modes: observer, influencer, intervener
  */
 export function isPresenceModeAvailable(
   mode: PresenceMode,
@@ -105,25 +106,15 @@ export function isPresenceModeAvailable(
     return { available: true };
   }
 
-  // Influencer available in Phase 1 (basic functionality)
+  // Influencer - subtle environmental nudges
   if (mode === "influencer") {
     return { available: true };
   }
 
-  // Whisperer - Phase 2 feature
-  if (mode === "whisperer") {
-    return {
-      available: false,
-      reason: "Whisperer mode is coming in Phase 2",
-    };
-  }
-
-  // Manifest - Phase 3 feature, has cooldown
-  if (mode === "manifest") {
-    return {
-      available: false,
-      reason: "Manifest mode is coming in Phase 3",
-    };
+  // Intervener - direct interaction (whisper, manifest)
+  // Available but de-emphasized
+  if (mode === "intervener") {
+    return { available: true };
   }
 
   return { available: false, reason: "Unknown presence mode" };

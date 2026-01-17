@@ -32,14 +32,31 @@ export type WorldEndState =
   | "cultural_fragmentation" // Society collapses
   | "eternal_ambiguity"; // Endless uncertainty
 
-// User presence modes (from PRD section 7)
-export type PresenceMode = "observer" | "influencer" | "whisperer" | "manifest";
+// User presence modes (from PRD v2.0)
+// Observer: Watch silently, no interaction
+// Influencer: Subtle environmental nudges (bless, dim, pressure)
+// Intervener: Direct interaction (whisper, manifest) - de-emphasized
+export type PresenceMode = "observer" | "influencer" | "intervener";
 
 export interface PresenceState {
   mode: PresenceMode;
   isActive: boolean;
   lastActionTick: number;
-  manifestCooldownUntil?: number; // Manifest mode has high cost
+  cooldownUntil?: number; // Intervener mode has high cost
+}
+
+// World actions (non-command, interpretive)
+export type WorldActionType =
+  | "introduce_pressure"
+  | "remove_support"
+  | "amplify_signal"
+  | "introduce_uncertainty";
+
+export interface WorldAction {
+  type: WorldActionType;
+  intensity: number; // 0-1
+  targetArea?: string; // optional area of effect
+  description: string;
 }
 
 // Cultural/belief trends in the world

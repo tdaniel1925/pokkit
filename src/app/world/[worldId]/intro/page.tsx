@@ -92,7 +92,7 @@ export default function IntroPage({
 
   return (
     <div
-      className="min-h-screen bg-black flex flex-col items-center justify-center p-8 cursor-pointer"
+      className="h-screen overflow-hidden bg-[#0a1f0a] flex flex-col items-center justify-center p-8 cursor-pointer select-none"
       onClick={handleNext}
     >
       <div
@@ -101,7 +101,7 @@ export default function IntroPage({
         }`}
       >
         {/* Title */}
-        <h1 className="text-4xl md:text-6xl font-light text-white mb-12 tracking-wide">
+        <h1 className="text-4xl md:text-6xl font-light text-[#f5f5f0] mb-12 tracking-wide">
           {step.title}
         </h1>
 
@@ -110,7 +110,7 @@ export default function IntroPage({
           {step.content.map((line, i) => (
             <p
               key={i}
-              className="text-xl md:text-2xl text-white/80 font-light leading-relaxed"
+              className="text-xl md:text-2xl text-[#f5f5f0]/80 font-light leading-relaxed"
             >
               {line}
             </p>
@@ -126,15 +126,15 @@ export default function IntroPage({
             <div
               key={i}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentStep ? "bg-white" : "bg-white/30"
+                i === currentStep ? "bg-[#f5f5f0]" : "bg-[#f5f5f0]/30"
               }`}
             />
           ))}
         </div>
 
         {/* Instructions */}
-        <p className="text-white/40 text-sm">
-          {isLastStep ? "Click to begin configuration" : "Click anywhere to continue"}
+        <p className="text-[#f5f5f0]/40 text-sm">
+          {isLastStep ? "Click to begin" : "Click anywhere to continue"}
         </p>
 
         {/* Skip button */}
@@ -144,7 +144,7 @@ export default function IntroPage({
               e.stopPropagation();
               handleSkip();
             }}
-            className="text-white/30 hover:text-white/60 text-xs transition-colors"
+            className="text-[#f5f5f0]/30 hover:text-[#f5f5f0]/60 text-xs transition-colors"
           >
             Skip intro
           </button>

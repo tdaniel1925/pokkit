@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { PresenceMode, WorldState } from "@/types/world";
 import type { Citizen } from "@/types/citizen";
-import { Eye, Sparkles, MessageCircle, Sun, AlertCircle } from "lucide-react";
+import { Eye, Sparkles, MessageCircle, AlertCircle } from "lucide-react";
 
 interface PresencePanelProps {
   world: WorldState;
@@ -34,18 +34,11 @@ export function PresencePanel({
       description: "Soft boosts and environmental nudges.",
     },
     {
-      mode: "whisperer",
+      mode: "intervener",
       icon: <MessageCircle className="w-5 h-5" />,
-      label: "Whisperer",
+      label: "Intervener",
       available: true,
-      description: "Private divine communications to individual citizens.",
-    },
-    {
-      mode: "manifest",
-      icon: <Sun className="w-5 h-5" />,
-      label: "Manifest",
-      available: true,
-      description: "Reveal yourself with divine proclamations to all.",
+      description: "Direct interaction through whispers and manifestations.",
     },
   ];
 
