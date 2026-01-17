@@ -161,7 +161,7 @@ export function WorldConfigEditor({
               <label className="text-sm font-medium text-gray-300">
                 {slider.label}
               </label>
-              <span className="text-sm text-purple-400">
+              <span className="text-sm text-green-400">
                 {slider.format(config[slider.key] as number)}
               </span>
             </div>
@@ -195,7 +195,7 @@ export function WorldConfigEditor({
             className={`flex-1 py-2 rounded-md font-medium transition-colors ${
               isSaving || !hasChanges
                 ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-purple-600 text-white hover:bg-purple-500"
+                : "bg-green-600 text-white hover:bg-green-500"
             }`}
           >
             {isSaving ? "Saving..." : "Save Changes"}

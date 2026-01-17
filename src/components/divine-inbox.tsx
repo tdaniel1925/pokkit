@@ -30,7 +30,7 @@ const CATEGORY_CONFIG: Record<
   InboxItemCategory,
   { emoji: string; color: string; bgColor: string }
 > = {
-  prayer: { emoji: "🙏", color: "text-purple-400", bgColor: "bg-purple-900/30" },
+  prayer: { emoji: "🙏", color: "text-green-400", bgColor: "bg-green-900/30" },
   question: { emoji: "❓", color: "text-blue-400", bgColor: "bg-blue-900/30" },
   accusation: { emoji: "😠", color: "text-red-400", bgColor: "bg-red-900/30" },
   praise: { emoji: "✨", color: "text-yellow-400", bgColor: "bg-yellow-900/30" },
@@ -75,7 +75,7 @@ function InboxItem({
     <div
       className={`
         p-4 rounded-lg border transition-all
-        ${isUnread ? "border-purple-500/50 bg-purple-900/10" : "border-neutral-700 bg-neutral-800/50"}
+        ${isUnread ? "border-green-500/50 bg-green-900/10" : "border-neutral-700 bg-neutral-800/50"}
         ${item.category === "crisis_call" ? "border-red-500/50 animate-pulse" : ""}
       `}
     >
@@ -88,7 +88,7 @@ function InboxItem({
             {config.emoji} {item.categoryLabel}
           </span>
           {isUnread && (
-            <span className="w-2 h-2 rounded-full bg-purple-500" />
+            <span className="w-2 h-2 rounded-full bg-green-500" />
           )}
           {hasResponded && (
             <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -141,7 +141,7 @@ function InboxItem({
         {!hasResponded && (
           <button
             onClick={() => onRespond(item)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 rounded text-sm transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 rounded text-sm transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
             Respond ({item.suggestedTone})
@@ -174,10 +174,10 @@ export function DivineInbox({
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-neutral-700">
         <div className="flex items-center gap-2">
-          <Inbox className="w-5 h-5 text-purple-400" />
+          <Inbox className="w-5 h-5 text-green-400" />
           <h2 className="font-semibold text-lg">Divine Inbox</h2>
           {summary.unread > 0 && (
-            <span className="px-2 py-0.5 bg-purple-600 rounded-full text-xs font-medium">
+            <span className="px-2 py-0.5 bg-green-600 rounded-full text-xs font-medium">
               {summary.unread} new
             </span>
           )}
@@ -202,7 +202,7 @@ export function DivineInbox({
             <div className="text-neutral-500">Total</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-purple-400">
+            <div className="text-2xl font-bold text-green-400">
               {summary.unread}
             </div>
             <div className="text-neutral-500">Unread</div>

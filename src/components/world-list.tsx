@@ -136,7 +136,7 @@ export function WorldList({ onWorldSelect }: WorldListProps) {
         </p>
         <Link
           href="/world/new"
-          className="inline-block px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-500 transition-colors"
+          className="inline-block px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors"
         >
           Create World
         </Link>
@@ -150,7 +150,7 @@ export function WorldList({ onWorldSelect }: WorldListProps) {
         <h2 className="text-xl font-semibold text-gray-100">Your Worlds</h2>
         <Link
           href="/world/new"
-          className="px-4 py-2 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-500 transition-colors"
+          className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-500 transition-colors"
         >
           + New World
         </Link>
@@ -162,7 +162,7 @@ export function WorldList({ onWorldSelect }: WorldListProps) {
             key={world.id}
             href={`/world/${world.id}`}
             onClick={() => onWorldSelect?.(world.id)}
-            className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-purple-500/50 transition-colors"
+            className="block p-4 bg-surface/50 border border-green-900/50 rounded-lg hover:border-green-500/50 transition-colors"
           >
             <div className="flex items-start justify-between">
               <div>

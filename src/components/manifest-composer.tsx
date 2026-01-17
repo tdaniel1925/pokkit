@@ -206,9 +206,9 @@ export function ManifestComposer({
   };
 
   return (
-    <div className="bg-gradient-to-b from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-lg p-4">
+    <div className="bg-gradient-to-b from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-purple-200">
+        <h3 className="text-lg font-semibold text-green-200">
           Divine Manifestation
         </h3>
         <div className="text-sm">
@@ -256,7 +256,7 @@ export function ManifestComposer({
                 onClick={() => setType(rt.value)}
                 className={`p-2 text-left rounded-md border transition-colors ${
                   type === rt.value
-                    ? "bg-purple-600/30 border-purple-400 text-purple-200"
+                    ? "bg-green-600/30 border-green-400 text-green-200"
                     : "bg-gray-800/50 border-gray-600 text-gray-400 hover:border-gray-500"
                 }`}
               >
@@ -279,7 +279,7 @@ export function ManifestComposer({
                 onClick={() => setIntensity(il.value)}
                 className={`w-full p-2 text-left rounded-md border transition-colors flex justify-between items-center ${
                   intensity === il.value
-                    ? "bg-purple-600/30 border-purple-400 text-purple-200"
+                    ? "bg-green-600/30 border-green-400 text-green-200"
                     : "bg-gray-800/50 border-gray-600 text-gray-400 hover:border-gray-500"
                 }`}
               >
@@ -370,7 +370,7 @@ export function ManifestComposer({
           className={`w-full py-3 rounded-md font-medium transition-colors ${
             isSubmitting || isOnCooldown || content.length < 10
               ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-              : "bg-purple-600 text-white hover:bg-purple-500"
+              : "bg-green-600 text-white hover:bg-green-500"
           }`}
         >
           {isSubmitting

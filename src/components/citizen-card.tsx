@@ -73,7 +73,7 @@ export function CitizenCard({ citizen, onClick, isSelected }: CitizenCardProps) 
           icon={<Brain className="w-3 h-3" />}
           label="Dissonance"
           value={state.cognitiveDissonance}
-          color="purple"
+          color="green"
           inverted
         />
       </div>
@@ -110,7 +110,7 @@ function StateBar({
   icon: React.ReactNode;
   label: string;
   value: number;
-  color: "green" | "amber" | "purple" | "blue";
+  color: "green" | "amber" | "emerald" | "blue";
   inverted?: boolean;
 }) {
   const percentage = Math.abs(value) * 100;
@@ -119,7 +119,7 @@ function StateBar({
   const colorClasses = {
     green: "bg-green-500",
     amber: "bg-amber-500",
-    purple: "bg-purple-500",
+    emerald: "bg-emerald-500",
     blue: "bg-blue-500",
   };
 

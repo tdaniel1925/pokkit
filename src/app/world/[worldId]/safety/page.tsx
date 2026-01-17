@@ -155,7 +155,7 @@ export default function SafetyLogPage({
             </Link>
           </div>
           <div className="flex items-center gap-3 mt-4">
-            <Shield className="w-8 h-8 text-purple-400" />
+            <Shield className="w-8 h-8 text-green-400" />
             <h1 className="text-2xl font-bold">Safety Log</h1>
             {unresolvedCount > 0 && (
               <span className="px-2 py-1 bg-red-600 rounded text-sm font-medium">
@@ -209,7 +209,7 @@ export default function SafetyLogPage({
               onClick={() => setView("flags")}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 view === "flags"
-                  ? "bg-purple-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -219,7 +219,7 @@ export default function SafetyLogPage({
               onClick={() => setView("events")}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 view === "events"
-                  ? "bg-purple-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
