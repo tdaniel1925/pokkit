@@ -37,15 +37,15 @@ export function PresencePanel({
       mode: "whisperer",
       icon: <MessageCircle className="w-5 h-5" />,
       label: "Whisperer",
-      available: false,
-      description: "Private communications. Coming in Phase 2.",
+      available: true,
+      description: "Private divine communications to individual citizens.",
     },
     {
       mode: "manifest",
       icon: <Sun className="w-5 h-5" />,
       label: "Manifest",
-      available: false,
-      description: "Explicit divine appearance. Coming in Phase 3.",
+      available: true,
+      description: "Reveal yourself with divine proclamations to all.",
     },
   ];
 

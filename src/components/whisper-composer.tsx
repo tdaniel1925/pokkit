@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Send, Sparkles, AlertCircle } from "lucide-react";
 import type { Citizen } from "@/types/citizen";
 import type { WhisperTone } from "@/types/social";
-import { recommendWhisperTone } from "@/lib/whisperer";
+import { recommendWhisperTone } from "@/lib/whisperer/utils";
 
 interface WhisperComposerProps {
   citizen: Citizen;

@@ -1,129 +1,167 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import type { WorldState, WorldFeedItem, PresenceMode } from "@/types/world";
 import type { Citizen } from "@/types/citizen";
 import { WorldFeed } from "@/components/world-feed";
 import { CitizenList } from "@/components/citizen-card";
 import { PresencePanel } from "@/components/presence-panel";
-import { ArrowLeft, Users, Activity, RefreshCw } from "lucide-react";
+import { WhisperComposer } from "@/components/whisper-composer";
+import { ManifestComposer } from "@/components/manifest-composer";
+import { ArrowLeft, Users, Activity, RefreshCw, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
-
-// Fixed timestamp for mock data to avoid hydration mismatch
-const MOCK_DATE = new Date("2026-01-17T00:00:00Z");
-
-// Mock data for development (will be replaced with API calls)
-const mockWorld: WorldState = {
-  id: "demo-world",
-  userId: "user-1",
-  config: {
-    name: "Genesis",
-    populationSize: 25,
-    culturalEntropy: 0.5,
-    beliefPlasticity: 0.5,
-    crisisFrequency: 0.3,
-    authoritySkepticismIndex: 0.5,
-  },
-  tick: 42,
-  status: "active",
-  createdAt: MOCK_DATE,
-  updatedAt: MOCK_DATE,
-};
-
-const mockFeedItems: WorldFeedItem[] = [
-  {
-    id: "1",
-    worldId: "demo-world",
-    tick: 40,
-    type: "citizen_post",
-    citizenId: "citizen-1",
-    content: "I wonder if there is meaning beyond what we can see. The stars feel like they're watching.",
-    createdAt: MOCK_DATE,
-  },
-  {
-    id: "2",
-    worldId: "demo-world",
-    tick: 41,
-    type: "cultural_shift",
-    content: "A new movement emerges: citizens are questioning the nature of free will.",
-    createdAt: MOCK_DATE,
-  },
-  {
-    id: "3",
-    worldId: "demo-world",
-    tick: 42,
-    type: "citizen_post",
-    citizenId: "citizen-2",
-    content: "Today I helped a stranger. It felt right, though I cannot explain why.",
-    createdAt: MOCK_DATE,
-  },
-];
+import { useRouter } from "next/navigation";
 
 export default function WorldViewPage() {
   const params = useParams();
+  const router = useRouter();
   const worldId = params.worldId as string;
 
-  const [world, setWorld] = useState<WorldState>(mockWorld);
-  const [feedItems, setFeedItems] = useState<WorldFeedItem[]>(mockFeedItems);
+  const [world, setWorld] = useState<WorldState | null>(null);
+  const [feedItems, setFeedItems] = useState<WorldFeedItem[]>([]);
   const [citizens, setCitizens] = useState<Citizen[]>([]);
   const [selectedCitizen, setSelectedCitizen] = useState<Citizen | null>(null);
   const [presenceMode, setPresenceMode] = useState<PresenceMode>("observer");
   const [activeTab, setActiveTab] = useState<"feed" | "citizens">("feed");
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdvancing, setIsAdvancing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load world data
-  useEffect(() => {
-    async function loadWorld() {
-      try {
-        // TODO: Replace with actual API call
-        // const res = await fetch(`/api/world/${worldId}`);
-        // const data = await res.json();
-        // setWorld(data.world);
-        // setFeedItems(data.feedItems);
-        // setCitizens(data.citizens);
+  // Fetch world data
+  const fetchWorldData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/world/${worldId}`);
+      const data = await response.json();
 
-        // For now, use mock data
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 500);
-      } catch (error) {
-        console.error("Failed to load world:", error);
-        setIsLoading(false);
+      if (!response.ok) {
+        setError(data.error || "Failed to load world");
+        return;
       }
+
+      setWorld(data.world);
+      setCitizens(data.citizens || []);
+      setFeedItems(data.feedItems || []);
+      setError(null);
+    } catch (err) {
+      setError("Network error loading world");
+      console.error("Failed to load world:", err);
+    } finally {
+      setIsLoading(false);
     }
-    loadWorld();
   }, [worldId]);
 
-  // Simulation tick (auto-advance in observer mode)
+  // Initial load
   useEffect(() => {
-    if (world.status !== "active" || presenceMode !== "observer") return;
+    fetchWorldData();
+  }, [fetchWorldData]);
 
-    const interval = setInterval(() => {
-      // TODO: Call API to advance simulation
-      // This would trigger processSimulationTick on the backend
-    }, 10000); // Every 10 seconds
-
-    return () => clearInterval(interval);
-  }, [world.status, presenceMode]);
-
+  // Handle tick advance
   const handleAdvanceTick = async () => {
-    // TODO: Call API to manually advance simulation tick
-    setWorld((prev) => ({
-      ...prev,
-      tick: prev.tick + 1,
-      updatedAt: new Date(),
-    }));
+    if (isAdvancing || !world) return;
+
+    setIsAdvancing(true);
+    try {
+      const response = await fetch(`/api/world/${worldId}/tick`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        // Refresh world data after tick
+        await fetchWorldData();
+      } else {
+        const data = await response.json();
+        console.error("Failed to advance tick:", data.error);
+      }
+    } catch (err) {
+      console.error("Error advancing tick:", err);
+    } finally {
+      setIsAdvancing(false);
+    }
   };
 
+  // Handle whisper sent
+  const handleWhisperSent = () => {
+    // Refresh data to show whisper effects
+    fetchWorldData();
+  };
+
+  // Handle manifest
+  const handleManifest = () => {
+    // Refresh data to show manifestation effects
+    fetchWorldData();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-dark">
+        <div className="flex items-center gap-3 text-green-400">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading world...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !world) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-dark">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error || "World not found"}</p>
+          <Link
+            href="/dashboard"
+            className="text-green-400 hover:text-green-300 underline"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty universe state - no citizens yet
+  if (citizens.length === 0 && world.tick === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-8">
+        <div className="max-w-2xl text-center space-y-8">
+          <h1 className="text-4xl md:text-6xl font-light text-white">
+            The Void Awaits
+          </h1>
+          <p className="text-xl md:text-2xl text-white/70 leading-relaxed">
+            Your universe exists, but it is empty.
+            <br />
+            No life stirs. No thoughts form.
+            <br />
+            Only potential.
+          </p>
+          <div className="pt-8 space-y-4">
+            <button
+              onClick={() => router.push(`/world/${worldId}/configure`)}
+              className="flex items-center justify-center gap-3 mx-auto px-8 py-4 bg-green-600 hover:bg-green-500 text-white text-lg font-medium rounded-lg transition-colors"
+            >
+              <Sparkles className="w-5 h-5" />
+              Begin Creation
+            </button>
+            <Link
+              href="/dashboard"
+              className="block text-white/50 hover:text-white/70 text-sm transition-colors"
+            >
+              Return to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-surface-dark">
       {/* Header */}
-      <header className="bg-neutral-900/80 border-b border-neutral-800 px-4 py-3">
+      <header className="bg-surface/80 border-b border-green-900/50 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
-              href="/"
+              href="/dashboard"
               className="text-neutral-400 hover:text-neutral-200 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -132,17 +170,22 @@ export default function WorldViewPage() {
               <h1 className="text-lg font-medium text-white">
                 {world.config.name}
               </h1>
-              <p className="text-sm text-neutral-500">
-                Tick {world.tick} • {world.status}
+              <p className="text-sm text-green-400/70">
+                Tick {world.tick} · {citizens.length} citizens · {world.status}
               </p>
             </div>
           </div>
           <button
             onClick={handleAdvanceTick}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm text-neutral-300 transition-colors"
+            disabled={isAdvancing}
+            className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg text-sm text-white transition-colors"
           >
-            <RefreshCw className="w-4 h-4" />
-            Advance Tick
+            {isAdvancing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+            {isAdvancing ? "Advancing..." : "Advance Tick"}
           </button>
         </div>
       </header>
@@ -150,14 +193,14 @@ export default function WorldViewPage() {
       {/* Main content */}
       <div className="flex-1 flex">
         {/* Left panel - Feed/Citizens */}
-        <div className="flex-1 flex flex-col border-r border-neutral-800">
+        <div className="flex-1 flex flex-col border-r border-green-900/30">
           {/* Tabs */}
-          <div className="flex border-b border-neutral-800">
+          <div className="flex border-b border-green-900/30">
             <button
               onClick={() => setActiveTab("feed")}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === "feed"
-                  ? "text-divine-400 border-b-2 border-divine-500"
+                  ? "text-green-400 border-b-2 border-green-500"
                   : "text-neutral-400 hover:text-neutral-200"
               }`}
             >
@@ -168,19 +211,19 @@ export default function WorldViewPage() {
               onClick={() => setActiveTab("citizens")}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === "citizens"
-                  ? "text-divine-400 border-b-2 border-divine-500"
+                  ? "text-green-400 border-b-2 border-green-500"
                   : "text-neutral-400 hover:text-neutral-200"
               }`}
             >
               <Users className="w-4 h-4" />
-              Citizens
+              Citizens ({citizens.length})
             </button>
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-hidden">
             {activeTab === "feed" ? (
-              <WorldFeed items={feedItems} isLoading={isLoading} />
+              <WorldFeed items={feedItems} isLoading={false} />
             ) : (
               <div className="p-4 overflow-y-auto h-full">
                 <CitizenList
@@ -194,13 +237,110 @@ export default function WorldViewPage() {
         </div>
 
         {/* Right panel - Presence controls */}
-        <div className="w-80 p-4 bg-neutral-950">
+        <div className="w-96 p-4 bg-surface overflow-y-auto">
           <PresencePanel
             world={world}
             selectedCitizen={selectedCitizen}
             currentMode={presenceMode}
             onModeChange={setPresenceMode}
           />
+
+          {/* Mode-specific composer */}
+          <div className="mt-4">
+            {presenceMode === "whisperer" && selectedCitizen && (
+              <WhisperComposer
+                worldId={worldId}
+                citizen={selectedCitizen}
+                onSend={async (content, tone) => {
+                  await fetch(`/api/world/${worldId}/whisper`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      citizenId: selectedCitizen.id,
+                      content,
+                      tone,
+                    }),
+                  });
+                  fetchWorldData();
+                }}
+              />
+            )}
+
+            {presenceMode === "whisperer" && !selectedCitizen && (
+              <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-200 text-sm">
+                  Select a citizen from the Citizens tab to whisper to them.
+                </p>
+              </div>
+            )}
+
+            {presenceMode === "manifest" && (
+              <ManifestComposer
+                worldId={worldId}
+                currentTick={world.tick}
+                currentInstability={(world as any).instability || 0}
+                instabilityTrend={(world as any).instabilityTrend || "stable"}
+                onManifest={handleManifest}
+              />
+            )}
+
+            {presenceMode === "observer" && (
+              <div className="p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+                <p className="text-green-200 text-sm">
+                  You are observing silently. Citizens cannot see or sense your presence.
+                </p>
+                <p className="text-green-200/60 text-xs mt-2">
+                  Click "Advance Tick" to progress the simulation and see what happens.
+                </p>
+              </div>
+            )}
+
+            {presenceMode === "influencer" && (
+              <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                <p className="text-blue-200 text-sm">
+                  Influencer mode allows subtle environmental nudges. Select a citizen to bless or dim their presence.
+                </p>
+                {selectedCitizen && (
+                  <div className="mt-3 space-y-2">
+                    <button
+                      onClick={async () => {
+                        await fetch(`/api/world/${worldId}/influence`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            citizenId: selectedCitizen.id,
+                            action: "bless",
+                            intensity: 0.5,
+                          }),
+                        });
+                        fetchWorldData();
+                      }}
+                      className="w-full py-2 bg-green-600 hover:bg-green-500 rounded text-sm text-white"
+                    >
+                      Bless {selectedCitizen.name}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        await fetch(`/api/world/${worldId}/influence`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            citizenId: selectedCitizen.id,
+                            action: "dim",
+                            intensity: 0.3,
+                          }),
+                        });
+                        fetchWorldData();
+                      }}
+                      className="w-full py-2 bg-gray-600 hover:bg-gray-500 rounded text-sm text-white"
+                    >
+                      Dim {selectedCitizen.name}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

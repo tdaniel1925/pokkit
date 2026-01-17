@@ -1,14 +1,14 @@
 /**
  * World API Routes - Multi-World Support
- * POST: Create a new world
+ * POST: Create a new empty world (no citizens yet)
  * GET: List user's worlds
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { WorldConfigSchema } from "@/types/world";
-import { createWorld, initializeWorld, validateWorldConfig } from "@/lib/simulation";
+import { createWorld, validateWorldConfig } from "@/lib/simulation";
 import { db } from "@/db";
-import { worlds, citizens, citizenBeliefs } from "@/db/schema";
+import { worlds, citizens } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 // Error response helper
@@ -18,7 +18,7 @@ function errorResponse(message: string, code: string, status: number) {
 
 /**
  * POST /api/world
- * Create a new world with initial population
+ * Create a new EMPTY world (no citizens yet - they are created via create-life endpoint)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -51,13 +51,10 @@ export async function POST(request: NextRequest) {
     // TODO: Get actual user ID from auth
     const userId = "00000000-0000-0000-0000-000000000001"; // Demo user UUID
 
-    // Create world using simulation library
+    // Create world using simulation library (but DON'T initialize citizens yet)
     const world = createWorld(userId, config);
 
-    // Initialize with population
-    const { citizens: initialCitizens } = initializeWorld(world);
-
-    // Save world to database
+    // Save world to database (empty - no citizens)
     const [worldRecord] = await db
       .insert(worlds)
       .values({
@@ -65,8 +62,8 @@ export async function POST(request: NextRequest) {
         userId: world.userId,
         name: world.config.name,
         config: world.config,
-        tick: world.tick,
-        status: world.status,
+        tick: 0, // Tick 0 = before creation
+        status: "paused", // Paused until life is created
         presenceMode: "observer",
         instability: 0,
         instabilityTrend: "stable",
@@ -74,41 +71,12 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
-    // Save citizens to database
-    for (const citizen of initialCitizens) {
-      const [citizenRecord] = await db
-        .insert(citizens)
-        .values({
-          id: citizen.id,
-          worldId: citizen.worldId,
-          name: citizen.name,
-          attributes: citizen.attributes,
-          state: citizen.state,
-          consent: citizen.consent,
-          createdAtTick: citizen.createdAtTick,
-          lastActiveTick: citizen.lastActiveTick,
-        })
-        .returning();
-
-      // Save initial beliefs
-      for (const belief of citizen.beliefs) {
-        await db.insert(citizenBeliefs).values({
-          citizenId: citizenRecord.id,
-          topic: belief.topic,
-          stance: belief.stance,
-          confidence: belief.confidence,
-          origin: belief.origin,
-          formedAtTick: belief.formedAtTick,
-        });
-      }
-    }
-
     return NextResponse.json({
       success: true,
       worldId: worldRecord.id,
       name: worldRecord.name,
-      citizenCount: initialCitizens.length,
       config: worldRecord.config,
+      // No citizenCount - world is empty
     });
   } catch (error) {
     console.error("POST /api/world error:", error);

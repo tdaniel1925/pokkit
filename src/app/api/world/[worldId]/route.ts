@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { db, worlds, citizens, worldFeedItems } from "@/db";
-// import { eq, desc } from "drizzle-orm";
+import { db } from "@/db";
+import { worlds, citizens, worldFeedItems } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 /**
  * GET /api/world/[worldId]
@@ -13,45 +14,84 @@ export async function GET(
   try {
     const { worldId } = await params;
 
-    // TODO: Implement database queries
-    // const world = await db.query.worlds.findFirst({
-    //   where: eq(worlds.id, worldId),
-    // });
-    //
-    // if (!world) {
-    //   return NextResponse.json({ error: "World not found" }, { status: 404 });
-    // }
-    //
-    // const worldCitizens = await db.query.citizens.findMany({
-    //   where: eq(citizens.worldId, worldId),
-    // });
-    //
-    // const feedItems = await db.query.worldFeedItems.findMany({
-    //   where: eq(worldFeedItems.worldId, worldId),
-    //   orderBy: desc(worldFeedItems.tick),
-    //   limit: 50,
-    // });
+    if (!db) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 503 }
+      );
+    }
 
-    // Return mock data for now
+    // Get the world
+    const worldResult = await db
+      .select()
+      .from(worlds)
+      .where(eq(worlds.id, worldId))
+      .limit(1);
+
+    if (worldResult.length === 0) {
+      return NextResponse.json({ error: "World not found" }, { status: 404 });
+    }
+
+    const world = worldResult[0];
+
+    // Get citizens for this world
+    const worldCitizens = await db
+      .select()
+      .from(citizens)
+      .where(eq(citizens.worldId, worldId));
+
+    // Get recent feed items
+    const feedItems = await db
+      .select()
+      .from(worldFeedItems)
+      .where(eq(worldFeedItems.worldId, worldId))
+      .orderBy(desc(worldFeedItems.tick), desc(worldFeedItems.createdAt))
+      .limit(50);
+
+    // Format the world state
+    const worldState = {
+      id: world.id,
+      userId: world.userId,
+      config: world.config,
+      tick: world.tick,
+      status: world.status,
+      presenceMode: world.presenceMode,
+      instability: world.instability,
+      instabilityTrend: world.instabilityTrend,
+      manifestCount: world.manifestCount,
+      manifestCooldownUntil: world.manifestCooldownUntil,
+      createdAt: world.createdAt,
+      updatedAt: world.updatedAt,
+    };
+
+    // Format citizens
+    const formattedCitizens = worldCitizens.map((c) => ({
+      id: c.id,
+      worldId: c.worldId,
+      name: c.name,
+      attributes: c.attributes,
+      state: c.state,
+      consent: c.consent,
+      createdAtTick: c.createdAtTick,
+      lastActiveTick: c.lastActiveTick,
+    }));
+
+    // Format feed items
+    const formattedFeedItems = feedItems.map((f) => ({
+      id: f.id,
+      worldId: f.worldId,
+      tick: f.tick,
+      type: f.type,
+      citizenId: f.citizenId,
+      content: f.content,
+      metadata: f.metadata,
+      createdAt: f.createdAt,
+    }));
+
     return NextResponse.json({
-      world: {
-        id: worldId,
-        userId: "demo-user",
-        config: {
-          name: "Demo World",
-          populationSize: 25,
-          culturalEntropy: 0.5,
-          beliefPlasticity: 0.5,
-          crisisFrequency: 0.3,
-          authoritySkepticismIndex: 0.5,
-        },
-        tick: 0,
-        status: "active",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      citizens: [],
-      feedItems: [],
+      world: worldState,
+      citizens: formattedCitizens,
+      feedItems: formattedFeedItems,
     });
   } catch (error) {
     console.error("Failed to get world:", error);
@@ -73,8 +113,14 @@ export async function DELETE(
   try {
     const { worldId } = await params;
 
-    // TODO: Implement database deletion
-    // await db.delete(worlds).where(eq(worlds.id, worldId));
+    if (!db) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 503 }
+      );
+    }
+
+    await db.delete(worlds).where(eq(worlds.id, worldId));
 
     return NextResponse.json({ success: true });
   } catch (error) {

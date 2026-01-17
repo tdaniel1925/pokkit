@@ -30,7 +30,7 @@ export default function NewWorldPage() {
 
       if (res.ok) {
         const { worldId } = await res.json();
-        router.push(`/world/${worldId}`);
+        router.push(`/world/${worldId}/intro`);
       } else {
         const error = await res.json();
         alert(error.message || "Failed to create world");
